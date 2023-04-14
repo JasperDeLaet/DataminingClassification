@@ -24,3 +24,8 @@ Trying to predict class
 
     -> we drop the native-country feature as it is mostly USA and thus USA is overrepresented
     -> we generate workclass missing values based on average
+
+# TODO
+- solve missing values workclass
+- missing values native-country
+- convert values to numerical values

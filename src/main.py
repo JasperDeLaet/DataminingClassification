@@ -44,10 +44,8 @@ for index, row in occupation_missing.iterrows():
     random_occupation = np.random.choice(list(occupation_total_dict.keys()), p=occupation_probabilities)
     data_df.loc[data_df['RowID'] == row['RowID'], 'occupation'] = random_occupation
 
-
-
 # Convert occupation into numerical value
-# occupations = {"Tech-support": 0,  " Craft-repair": 1, "Other-service": 2, "Sales": 3, "Exec-managerial": 4,
-#                "Prof-specialty": 5, "Handlers-cleaners": 6, "Machine-op-inspct": 7, "Adm-clerical": 8,
-#                "Farming-fishing": 9, "Transport-moving": 10, "Priv-house-serv": 11, "Protective-serv": 12, "Armed-Forces": 13}
-# data_df['occupation'] = data_df['occupation'].map(occupations)
+occupations = {"Tech-support": 0,  " Craft-repair": 1, "Other-service": 2, "Sales": 3, "Exec-managerial": 4,
+               "Prof-specialty": 5, "Handlers-cleaners": 6, "Machine-op-inspct": 7, "Adm-clerical": 8,
+               "Farming-fishing": 9, "Transport-moving": 10, "Priv-house-serv": 11, "Protective-serv": 12, "Armed-Forces": 13}
+data_df['occupation'] = data_df['occupation'].map(occupations)
