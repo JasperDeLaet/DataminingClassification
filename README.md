@@ -1,2 +1,2 @@
-# DataminingClassification
+# Datamining Classification
 Datamining assignment: classification
