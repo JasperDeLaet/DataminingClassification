@@ -32,20 +32,22 @@ data_df['class'] = data_df['class'].map(incomes)
 genders = {"Male": 0, "Female": 1}
 data_df['sex'] = data_df['sex'].map(genders)
 
+# Solve missing values occupation by assigning them based on the distribution of the not null data
+occupation_total = data_df['occupation'].value_counts()
+occupation_total_dict = occupation_total.to_dict()
 
-# Further feature analysis
-# low_income = 'low_income'
-# high_income = 'high_income'
-#
-# fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
-# women = data_df[data_df['sex'] == 'Female']
-# men = data_df[data_df['sex'] == 'Male']
-# ax = sns.distplot(women[women['class'] == 0].age.dropna(), label=low_income, ax=axes[0], kde=False)
-# ax = sns.distplot(women[women['class'] == 1].age.dropna(), label=high_income, ax=axes[0], kde=False)
-# ax.legend()
-# ax.set_title('Female')
-# ax = sns.distplot(men[men['class'] == 0].age.dropna(), label=low_income, ax=axes[1], kde=False)
-# ax = sns.distplot(men[men['class'] == 1].age.dropna(), label=high_income, ax=axes[1], kde=False)
-# ax.legend()
-# _ = ax.set_title('Male')
-# plt.show()
+occupation_missing = data_df[data_df['occupation'].isna()]
+occupation_probabilities = []
+for value in list(occupation_total_dict.values()):
+    occupation_probabilities.append(value/sum(list(occupation_total_dict.values())))
+for index, row in occupation_missing.iterrows():
+    random_occupation = np.random.choice(list(occupation_total_dict.keys()), p=occupation_probabilities)
+    data_df.loc[data_df['RowID'] == row['RowID'], 'occupation'] = random_occupation
+
+
+
+# Convert occupation into numerical value
+# occupations = {"Tech-support": 0,  " Craft-repair": 1, "Other-service": 2, "Sales": 3, "Exec-managerial": 4,
+#                "Prof-specialty": 5, "Handlers-cleaners": 6, "Machine-op-inspct": 7, "Adm-clerical": 8,
+#                "Farming-fishing": 9, "Transport-moving": 10, "Priv-house-serv": 11, "Protective-serv": 12, "Armed-Forces": 13}
+# data_df['occupation'] = data_df['occupation'].map(occupations)

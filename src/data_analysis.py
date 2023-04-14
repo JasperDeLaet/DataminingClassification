@@ -1,16 +1,41 @@
 import pandas as pd
-from matplotlib import pyplot as plt
-from matplotlib import style
-import seaborn as sns
+
 
 data_df = pd.read_excel('./data/existing-customers.xlsx')
 
+
+# Race analysis to see whether race is a good feature to consider for predicting income (looking for bias)
 total = data_df['race'].value_counts()
 percentage = round((data_df['race'].value_counts()/len(data_df))*100)
 race_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
-print(race_count)
+# print(race_count)
 
-# grid = sns.FacetGrid(data_df, col='class', row='race', aspect=1.6)
-# grid.map(plt.hist, 'age', alpha=.5, bins=20)
-# grid.add_legend()
-# plt.savefig("race_analysis.pdf", format="pdf", bbox_inches="tight")
+# sex
+total = data_df['sex'].value_counts()
+percentage = round((data_df['sex'].value_counts()/len(data_df))*100)
+sex_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
+# print(sex_count)
+
+# workclass
+total = data_df['workclass'].value_counts()
+percentage = round((data_df['workclass'].value_counts()/len(data_df))*100)
+workclass_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
+# print(workclass_count)
+
+# native country
+total = data_df['native-country'].value_counts()
+percentage = round((data_df['native-country'].value_counts()/len(data_df))*100)
+country_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
+# print(country_count)
+
+# class
+total = data_df['class'].value_counts()
+percentage = round((data_df['class'].value_counts()/len(data_df))*100)
+class_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
+# print(class_count)
+
+# occupation
+total = data_df['occupation'].value_counts()
+percentage = round((data_df['occupation'].value_counts()/len(data_df))*100)
+occupation_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
+print(occupation_count)
