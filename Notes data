@@ -1,0 +1,7 @@
+- Income > 50k -> 10% chance to accept offer -> average profit 980 euro
+- Income <= 50k -> 5% chance to accept offer -> average profit -310 euro
+- Cost of producing+mailing package 10 euro
+
+- Data:
+	- potential customers -> demographic info
+	- existing customers -> demographic info + income info
