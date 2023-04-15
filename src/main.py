@@ -8,6 +8,8 @@ import seaborn as sns
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
 
 data_df = pd.read_excel('./data/existing-customers.xlsx')
 
@@ -104,12 +106,28 @@ data_df.loc[data_df['capital-loss'] < 1, 'capital-loss'] = 0
 data_df.loc[data_df['capital-loss'] > 1, 'capital-loss'] = 1
 
 # After analysis and preprocessing we need to split the dataset in test and train sets
-X = data_df.drop(columns=['class', 'RowID'])
-y = data_df[['class']]
-print(X.columns)
-print(y.columns)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
+shuffled_df = data_df.sample(frac=1, random_state=4)
+high_income_df = shuffled_df.loc[shuffled_df['class'] == 1]
+
+low_income_df = shuffled_df.loc[shuffled_df['class'] == 0].sample(n=15000, random_state=42)
+
+normalized_df = pd.concat([high_income_df, low_income_df])
+
+from imblearn.over_sampling import SMOTE
+su = SMOTE(random_state=42)
+
+
+X = normalized_df.drop(columns=['class', 'RowID'])
+y = normalized_df[['class']]
+
+X_su, y_su = su.fit_resample(X, y)
+
+print(y_su['class'].value_counts())
+
+X_train, X_test, y_train, y_test = train_test_split(X_su, y_su, test_size=0.20, random_state=1)
+
+
 
 # Gaussian Naive Bayes
 nb = GaussianNB()
@@ -117,11 +135,16 @@ nb.fit(X_train, y_train)
 GaussianNB(priors=None)
 nb_pred = nb.predict(X_test)
 nb_accuracy = accuracy_score(y_true=y_test, y_pred=nb_pred)
-print(nb_accuracy)
+# print(nb_accuracy)
 
 # Decision tree
 dt = DecisionTreeClassifier()
 dt.fit(X_train, y_train)
 dt_pred = dt.predict(X_test)
 dt_accuracy = accuracy_score(y_true=y_test, y_pred=dt_pred)
-print(dt_accuracy)
+# print(dt_accuracy)
+
+
+target_names = ['<=50K', '>50K']
+print(classification_report(y_test, nb_pred, target_names=target_names))
+print(classification_report(y_test, dt_pred, target_names=target_names))
