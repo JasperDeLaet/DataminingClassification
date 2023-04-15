@@ -5,6 +5,9 @@ from sklearn.model_selection import train_test_split
 from matplotlib import pyplot as plt
 from matplotlib import style
 import seaborn as sns
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeClassifier
 
 data_df = pd.read_excel('./data/existing-customers.xlsx')
 
@@ -101,4 +104,24 @@ data_df.loc[data_df['capital-loss'] < 1, 'capital-loss'] = 0
 data_df.loc[data_df['capital-loss'] > 1, 'capital-loss'] = 1
 
 # After analysis and preprocessing we need to split the dataset in test and train sets
-train, test = train_test_split(data_df, test_size=0.2)
+X = data_df.drop(columns=['class', 'RowID'])
+y = data_df[['class']]
+print(X.columns)
+print(y.columns)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
+
+# Gaussian Naive Bayes
+nb = GaussianNB()
+nb.fit(X_train, y_train)
+GaussianNB(priors=None)
+nb_pred = nb.predict(X_test)
+nb_accuracy = accuracy_score(y_true=y_test, y_pred=nb_pred)
+print(nb_accuracy)
+
+# Decision tree
+dt = DecisionTreeClassifier()
+dt.fit(X_train, y_train)
+dt_pred = dt.predict(X_test)
+dt_accuracy = accuracy_score(y_true=y_test, y_pred=dt_pred)
+print(dt_accuracy)
