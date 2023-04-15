@@ -22,7 +22,6 @@ Trying to predict class
     Missing values in workclass (1836), occupation (1843), native-country (583)
     - A solve is to delete all of these samples: Worst case: deleting 4262 (13 percent of total)
 
-    -> we drop the native-country feature as it is mostly USA and thus USA is overrepresented
     -> we generate workclass missing values based on average
 
 # TODO

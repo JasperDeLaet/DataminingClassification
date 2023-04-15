@@ -38,4 +38,10 @@ class_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
 total = data_df['occupation'].value_counts()
 percentage = round((data_df['occupation'].value_counts()/len(data_df))*100)
 occupation_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
-print(occupation_count)
+# print(occupation_count)
+
+# marital-status
+total = data_df['marital-status'].value_counts()
+percentage = round((data_df['marital-status'].value_counts()/len(data_df))*100)
+marital_status_count = pd.concat([total, percentage], axis=1, keys=['Total', '%'])
+print(marital_status_count)
