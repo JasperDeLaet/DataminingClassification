@@ -100,4 +100,5 @@ data_df.loc[data_df['capital-gain'] > 1, 'capital-gain'] = 1
 data_df.loc[data_df['capital-loss'] < 1, 'capital-loss'] = 0
 data_df.loc[data_df['capital-loss'] > 1, 'capital-loss'] = 1
 
-data_df.info()
+# After analysis and preprocessing we need to split the dataset in test and train sets
+train, test = train_test_split(data_df, test_size=0.2)
