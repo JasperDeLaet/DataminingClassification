@@ -4,13 +4,14 @@ import pandas as pd
 
 data_df = pd.read_excel('./data/potential-customers.xlsx')
 
+data_df = data_df.dropna()
+
 data_df = data_df.drop(columns=['education'])
 data_df = data_df.drop(columns=['native-country'])
 data_df = data_df.drop(columns=['race'])
 data_df = data_df.drop(columns=['relationship'])
 genders = {"Male": 0, "Female": 1}
 data_df['sex'] = data_df['sex'].map(genders)
-
 
 
 occupations = {"Tech-support": 0,  "Craft-repair": 1, "Other-service": 2, "Sales": 3, "Exec-managerial": 4,

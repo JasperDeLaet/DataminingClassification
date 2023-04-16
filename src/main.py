@@ -106,13 +106,14 @@ data_df.loc[data_df['capital-loss'] < 1, 'capital-loss'] = 0
 data_df.loc[data_df['capital-loss'] > 1, 'capital-loss'] = 1
 
 # After analysis and preprocessing we need to split the dataset in test and train sets
-
+# First solve the data imbalance for the income feature
 shuffled_df = data_df.sample(frac=1, random_state=4)
 high_income_df = shuffled_df.loc[shuffled_df['class'] == 1]
 
 low_income_df = shuffled_df.loc[shuffled_df['class'] == 0].sample(n=17000, random_state=42)
 
 normalized_df = pd.concat([high_income_df, low_income_df])
+
 
 from imblearn.over_sampling import SMOTE
 su = SMOTE(random_state=42)
@@ -146,12 +147,12 @@ dt_pred = dt.predict(X_test)
 rf = RandomForestClassifier(n_estimators=100)
 rf.fit(X_train, y_train.values.ravel())
 rf_pred_proba = rf.predict_proba(X_test)
+rf_pred_default = rf.predict(X_test)
 
 
 target_names = ['<=50K', '>50K']
 print(classification_report(y_test, nb_pred, target_names=target_names))
 print(classification_report(y_test, dt_pred, target_names=target_names))
-# print(classification_report(y_test, rf_pred, target_names=target_names))
 
 # -> random forest has best performance (best recall which is more important as missing Positives (>50k) results in
 # missing out on 88 profit (compared to False negatives which result in -25.5)
@@ -196,8 +197,9 @@ for i in range(100):
     gains.append(compute_expected_gain(tp, fp))
     threshold += 0.01
 
-# plt.plot(thresholds, gains)
-# plt.show()
+print(thresholds[np.argmax(gains)])
+plt.plot(thresholds, gains)
+plt.savefig('threshold.png')
 #
 # print(max(gains))
 # print(thresholds[np.argmax(gains)])
@@ -205,5 +207,9 @@ for i in range(100):
 # Doing this we find that a threshold of 0.2 for random forest gives us the best results (highest gain) based on the
 # test set
 
+print(classification_report(y_test, rf_pred_default, target_names=target_names))
+print(classification_report(y_test, (rf_pred_proba[:, 1] >= 0.2).astype('int'), target_names=target_names))
+
+# Save model
 filename = 'random_forest.pickle'
 pickle.dump(rf, open(filename, "wb"))

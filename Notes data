@@ -16,7 +16,6 @@ Trying to predict class
     - after analysis race is not a good feature as the data is imbalanced, (85 percent White, 10 percent Black, ...)
     - 90 percent of the native country data is USA -> imbalance -> consider dropping this category
 
-
     - We have a mild imbalance in the class feature (feature we want to learn) 76 percent is low income, 24 percent is high income
 
 - Missing values:

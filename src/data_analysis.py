@@ -3,6 +3,12 @@ import pandas as pd
 
 data_df = pd.read_excel('./data/existing-customers.xlsx')
 
+# Search for missing values
+total = data_df.isnull().sum().sort_values(ascending=False)
+percent_1 = data_df.isnull().sum()/data_df.isnull().count()*100
+percent_2 = (round(percent_1, 1)).sort_values(ascending=False)
+missing_data = pd.concat([total, percent_2], axis=1, keys=['Total', '%'])
+print(missing_data.head(16))
 
 # Race analysis to see whether race is a good feature to consider for predicting income (looking for bias)
 total = data_df['race'].value_counts()
