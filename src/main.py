@@ -1,4 +1,5 @@
 
+import pickle
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -162,7 +163,7 @@ print(classification_report(y_test, dt_pred, target_names=target_names))
 
 # We focus on predicting high income as this is where we want to send the promotions too
 # True positive = Correct high income prediction
-# False positive = Wrong high income predicition
+# False positive = Wrong high income prediction
 
 
 def compute_expected_gain(tp: int, fp: int):
@@ -195,15 +196,14 @@ for i in range(100):
     gains.append(compute_expected_gain(tp, fp))
     threshold += 0.01
 
-plt.plot(thresholds, gains)
-plt.show()
-
-print(max(gains))
-print(thresholds[np.argmax(gains)])
+# plt.plot(thresholds, gains)
+# plt.show()
+#
+# print(max(gains))
+# print(thresholds[np.argmax(gains)])
 
 # Doing this we find that a threshold of 0.2 for random forest gives us the best results (highest gain) based on the
 # test set
 
-
-
-
+filename = 'random_forest.pickle'
+pickle.dump(rf, open(filename, "wb"))
