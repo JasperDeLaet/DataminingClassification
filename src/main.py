@@ -10,6 +10,8 @@ from sklearn.metrics import classification_report
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
+# This file is mainly used for data analysis, preprocessing, training, and optimizing the model
+
 data_df = pd.read_excel('./data/existing-customers.xlsx')
 
 # Data analysis

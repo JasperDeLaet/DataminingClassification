@@ -1,6 +1,8 @@
 import pickle
 import pandas as pd
 
+# This file is used to come up with final predictions for new customers (based on potential-customers set)
+# and coming up with a final estimate
 
 data_df = pd.read_excel('./data/potential-customers.xlsx')
 

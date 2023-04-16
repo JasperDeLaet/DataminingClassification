@@ -1,5 +1,6 @@
 import pandas as pd
 
+# This file is purely meant for data analysis
 
 data_df = pd.read_excel('./data/existing-customers.xlsx')
 
