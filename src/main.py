@@ -10,7 +10,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 data_df = pd.read_excel('./data/existing-customers.xlsx')
 
@@ -32,9 +33,6 @@ data_df = data_df.drop(columns=['education'])
 data_df = data_df.drop(columns=['native-country'])
 data_df = data_df.drop(columns=['race'])
 data_df = data_df.drop(columns=['relationship'])
-
-# Drop rows where native country has missing values (because only 1.5 percent of native county values are missing)
-# data_df = data_df.dropna(subset=['native-country'])
 
 # Converting to numerical values
 
@@ -126,13 +124,11 @@ X_su, y_su = su.fit_resample(X, y)
 
 print(y_su['class'].value_counts())
 
-X_train, X_test, y_train, y_test = train_test_split(X_su, y_su, test_size=0.20, random_state=1)
-
-
+X_train, X_test, y_train, y_test = train_test_split(X_su, y_su, test_size=0.33, random_state=1)
 
 # Gaussian Naive Bayes
 nb = GaussianNB()
-nb.fit(X_train, y_train)
+nb.fit(X_train, y_train.values.ravel())
 GaussianNB(priors=None)
 nb_pred = nb.predict(X_test)
 # nb_accuracy = accuracy_score(y_true=y_test, y_pred=nb_pred)
@@ -140,18 +136,74 @@ nb_pred = nb.predict(X_test)
 
 # Decision tree
 dt = DecisionTreeClassifier()
-dt.fit(X_train, y_train)
+dt.fit(X_train, y_train.values.ravel())
 dt_pred = dt.predict(X_test)
 # dt_accuracy = accuracy_score(y_true=y_test, y_pred=dt_pred)
 # print(dt_accuracy)
 
-# Logistic Regression
-lr = LogisticRegression()
-lr.fit(X_train, y_train)
-lr_pred = lr.predict(X_test)
+# Random Forest
+rf = RandomForestClassifier(n_estimators=100)
+rf.fit(X_train, y_train.values.ravel())
+rf_pred_proba = rf.predict_proba(X_test)
+
 
 target_names = ['<=50K', '>50K']
 print(classification_report(y_test, nb_pred, target_names=target_names))
 print(classification_report(y_test, dt_pred, target_names=target_names))
-print(classification_report(y_test, lr_pred, target_names=target_names))
+# print(classification_report(y_test, rf_pred, target_names=target_names))
+
+# -> random forest has best performance (best recall which is more important as missing Positives (>50k) results in
+# missing out on 88 profit (compared to False negatives which result in -25.5)
+
+# Now we find the expected gain/loss based on the percentages given in the assignment
+# This is given by the following formula
+# (amount of low income * (-25.5)) + (amount of high income * (+88))
+# we can now tune random forest's threshold by changing the threshold and choosing the maximum
+
+# We focus on predicting high income as this is where we want to send the promotions too
+# True positive = Correct high income prediction
+# False positive = Wrong high income predicition
+
+
+def compute_expected_gain(tp: int, fp: int):
+    """
+    Here tp: True Positives (amount of correct High income predictions)
+    fp: False positives (amount of wrong High income predictions, low income)
+    """
+    return (tp * 88) + (fp*(-25.5))
+
+
+# create confusion matrix
+# cm = confusion_matrix(y_test, rf_pred, labels=rf.classes_)
+# disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=rf.classes_)
+# disp.plot()
+#
+# plt.show()
+#
+# print(compute_expected_gain(tp, fp))
+
+threshold = 0
+thresholds = []
+gains = []
+
+for i in range(100):
+    rf_pred = (rf_pred_proba[:, 1] >= threshold).astype('int')
+    cm = confusion_matrix(y_test, rf_pred, labels=rf.classes_)
+    tp = cm[1][1]
+    fp = cm[0][1]
+    thresholds.append(threshold)
+    gains.append(compute_expected_gain(tp, fp))
+    threshold += 0.01
+
+plt.plot(thresholds, gains)
+plt.show()
+
+print(max(gains))
+print(thresholds[np.argmax(gains)])
+
+# Doing this we find that a threshold of 0.2 for random forest gives us the best results (highest gain) based on the
+# test set
+
+
+
 

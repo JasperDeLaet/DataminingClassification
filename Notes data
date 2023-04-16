@@ -1,3 +1,4 @@
+
 - Income > 50k -> 10% chance to accept offer -> average profit 980 euro
 - Income <= 50k -> 5% chance to accept offer -> average profit -310 euro
 - Cost of producing+mailing package 10 euro
@@ -23,8 +24,3 @@ Trying to predict class
     - A solve is to delete all of these samples: Worst case: deleting 4262 (13 percent of total)
 
     -> we generate workclass missing values based on average
-
-# TODO
-- solve missing values workclass
-- missing values native-country
-- convert values to numerical values
