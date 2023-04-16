@@ -10,6 +10,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
+from sklearn.linear_model import LogisticRegression
 
 data_df = pd.read_excel('./data/existing-customers.xlsx')
 
@@ -110,7 +111,7 @@ data_df.loc[data_df['capital-loss'] > 1, 'capital-loss'] = 1
 shuffled_df = data_df.sample(frac=1, random_state=4)
 high_income_df = shuffled_df.loc[shuffled_df['class'] == 1]
 
-low_income_df = shuffled_df.loc[shuffled_df['class'] == 0].sample(n=15000, random_state=42)
+low_income_df = shuffled_df.loc[shuffled_df['class'] == 0].sample(n=17000, random_state=42)
 
 normalized_df = pd.concat([high_income_df, low_income_df])
 
@@ -134,17 +135,23 @@ nb = GaussianNB()
 nb.fit(X_train, y_train)
 GaussianNB(priors=None)
 nb_pred = nb.predict(X_test)
-nb_accuracy = accuracy_score(y_true=y_test, y_pred=nb_pred)
+# nb_accuracy = accuracy_score(y_true=y_test, y_pred=nb_pred)
 # print(nb_accuracy)
 
 # Decision tree
 dt = DecisionTreeClassifier()
 dt.fit(X_train, y_train)
 dt_pred = dt.predict(X_test)
-dt_accuracy = accuracy_score(y_true=y_test, y_pred=dt_pred)
+# dt_accuracy = accuracy_score(y_true=y_test, y_pred=dt_pred)
 # print(dt_accuracy)
 
+# Logistic Regression
+lr = LogisticRegression()
+lr.fit(X_train, y_train)
+lr_pred = lr.predict(X_test)
 
 target_names = ['<=50K', '>50K']
 print(classification_report(y_test, nb_pred, target_names=target_names))
 print(classification_report(y_test, dt_pred, target_names=target_names))
+print(classification_report(y_test, lr_pred, target_names=target_names))
+
