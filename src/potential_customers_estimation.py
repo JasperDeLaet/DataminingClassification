@@ -1,31 +1,8 @@
 import pickle
-import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from matplotlib import pyplot as plt
-from matplotlib import style
-import seaborn as sns
-from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import accuracy_score
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import classification_report
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
 
 data_df = pd.read_excel('./data/potential-customers.xlsx')
-
-data_df.info()
-
-data_df = data_df.dropna().reset_index(drop=True)
-
-total = data_df.isnull().sum().sort_values(ascending=False)
-percent_1 = data_df.isnull().sum()/data_df.isnull().count()*100
-percent_2 = (round(percent_1, 1)).sort_values(ascending=False)
-missing_data = pd.concat([total, percent_2], axis=1, keys=['Total', '%'])
-print(missing_data.head(16))
-
-print(data_df.columns.values)
 
 data_df = data_df.drop(columns=['education'])
 data_df = data_df.drop(columns=['native-country'])
@@ -45,6 +22,7 @@ data_df['occupation'] = data_df['occupation'].map(occupations)
 workclasses = {"Private": 0, "Self-emp-not-inc": 1, "Self-emp-inc": 2, "Federal-gov": 3, "Local-gov": 4,
                "State-gov": 5, "Without-pay": 6, "Never-worked": 7}
 data_df['workclass'] = data_df['workclass'].map(workclasses)
+
 marital_statuses = {"Married-civ-spouse": 0, "Divorced": 1, "Never-married": 2, "Separated": 3, "Widowed": 4,
                     "Married-spouse-absent": 5, "Married-AF-spouse": 6}
 data_df['marital-status'] = data_df['marital-status'].map(marital_statuses)
@@ -59,29 +37,29 @@ data_df.loc[(data_df['age'] > 40) & (data_df['age'] <= 50), 'age'] = 4
 data_df.loc[(data_df['age'] > 50) & (data_df['age'] <= 60), 'age'] = 5
 data_df.loc[data_df['age'] > 60, 'age'] = 6
 
-# I choose to categorize into two categories as the amount of non-zero capital-gain samples is relatively low
-# compared to equal to zero
 data_df.loc[data_df['capital-gain'] < 1, 'capital-gain'] = 0
 data_df.loc[data_df['capital-gain'] > 1, 'capital-gain'] = 1
 
-# Same for capital-loss
 data_df.loc[data_df['capital-loss'] < 1, 'capital-loss'] = 0
 data_df.loc[data_df['capital-loss'] > 1, 'capital-loss'] = 1
 
 X = data_df.drop(columns=['RowID'])
 
+# Load model created in main.py (Random forest model threshold =0.2)
 filename = 'random_forest.pickle'
 rf = pickle.load(open(filename, "rb"))
 
-
+# Create predictions using the random forest model trained on the existing-customers data
 rf_pred_proba = rf.predict_proba(X)
 rf_pred = (rf_pred_proba[:, 1] >= 0.2).astype('bool')
 
-pred_tested_true = X[rf_pred]
+# select the right data (RowIDs)
+pred_tested_true = data_df[rf_pred]
 
-row_ids = data_df['RowID']
-predictions_row_ids = []
+row_ids = pred_tested_true['RowID']
 
-rows = pred_tested_true[pred_tested_true.columns[0]]
-
+# Write all RowIDS to text file
+with open('predicted_row_ids.txt', 'w') as f:
+    for row in row_ids.items():
+        f.write(str(row[1]) + '\n')
 
